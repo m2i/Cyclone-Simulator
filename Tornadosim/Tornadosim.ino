@@ -1,10 +1,24 @@
+
+/*Cyclone Tornado Simulator
+ * Uses OneWire to talk to the 18B20 temp sensor.  Tested using OneWire from this source
+ * https://github.com/ntruchsess/arduino-OneWire
+ */
+
 #include <OneWire.h>
-int DS18S20_Pin=2;//tempsensor signal pin D2
-OneWire ds(DS18S20_Pin); // OneWire now applied to D2
+int DS18B20_Pin=2;//18B20 signal pin D2
+OneWire ds(DS18B20_Pin); // OneWire now applied to D2
+//Sets Temp LED to D3
 const int tled=3;
+//Sets Water level LED to D4
 const int wled=4;
+//Sets AC Tailswitch to D6
 const int cut=6;
+//Sets float switch input to D5
 const int fswitch=5;
+//Sets the max water temp in Celisus
+const int temp_limit = 49;
+
+//Configure pinmodes and serial port
 void setup() {
   Serial.begin(9600);
   pinMode(tled, OUTPUT);
@@ -14,8 +28,6 @@ void setup() {
 }
 
 void loop() {
- while(1)
- {
   float tempc=getTemp();// gets temperature in Celsius
   float tempf=tempc*9/5+32; // converts to F
   int switchstate=0;
@@ -83,11 +95,13 @@ void loop() {
     digitalWrite(wled,LOW);
     delay(500);
    }
- }
 }
-float getTemp(){
-  //returns the temperature from one DS18S20 in DEG Celsius
 
+//getTemp function, reads the data from a DS18B20 and returns
+//the value in degrees Celsius
+
+float getTemp(){
+  
   byte data[12];
   byte addr[8];
 
